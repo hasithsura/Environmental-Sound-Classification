@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Environment Sound Classification</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script>
+            $(function() {
+                $('#uploadButton').click(function() {
+                    $('#uploadButton').attr("disabled",true);
+                    $('#tablediv').html("<table style=\"border-collapse: separate;border-spacing:20px;\"><tr><td><div class=\"spinner-border text-primary\" role=\"status\"><span class=\"sr-only\">Loading...</span></div></td><td><div class=\"alert alert-primary\" role=\"alert\">Wait for a minute!</div></td></tr></table>");
+                    event.preventDefault();
+                    var form_data = new FormData($('#submitForm')[0]);
+                    
+                    $.ajax({
+                        type: 'POST',
+                        url: '/uploadajax',
+                        data: form_data,
+                        contentType: false,
+                        processData: false,
+                        dataType: 'json'
+                    }).done(function(data, textStatus, jqXHR){
+                        
+                        var resdis="<table class=\"table result\"><thead><th scope=\"col\">#</th><th scope=\"col\">Category</th><th scope=\"col\">Probability</th></thead><tbody>";
+                        var sno=1;
+                        $.each(data,function(category, value){
+
+                            resdis+="<tr><th scope=\"row\">"+sno+"</th><td>"+category+"</td><td>"+value+"</td></tr>";
+                            sno+=1;
+                        });
+                        
+                        resdis+="</tbody></table>";
+                        $('#tablediv').html(resdis);
+                        
+                    $('#uploadButton').attr("disabled",false); 
+                    }).fail(function(data){
+                        console.log('error!');
+
+                    $('#uploadButton').attr("disabled",false);
+                    });
+                });
+                
+            });
+        </script>
+    </head>
+    <body>
+        <h3 align="center">Environment Sound Classification</h3><br/><br/><br/>
+            <!--<div>
+                    This app will classify environment sounds of following categories.<br/>
+                    'airplane', 'breathing', 'brushing_teeth', 'can_opening', 'car_horn', 'cat',<br/> 
+                    'chainsaw', 'chirping_birds', 'church_bells', 'clapping', 'clock_alarm', 'clock_tick',<br/> 
+                    'coughing', 'cow', 'crackling_fire', 'crickets', 'crow', 'crying_baby', 'dog', <br/>
+                    'door_wood_creaks', 'door_wood_knock', 'drinking_sipping', 'engine', 'fireworks', <br/>
+                    'footsteps', 'frog', 'glass_breaking', 'hand_saw', 'helicopter', 'hen', 'insects', <br/>
+                    'keyboard_typing', 'laughing', 'mouse_click', 'pig', 'pouring_water', 'rain', 'rooster',<br/>
+                     'sea_waves', 'sheep', 'siren', 'sneezing', 'snoring', 'thunderstorm', 'toilet_flush', <br/>
+                     'train', 'vacuum_cleaner', 'washing_machine', 'water_drops', 'wind'
+                    </div>-->
+        <div class="d-flex flex-row justify-content-center">
+        <div class="d-flex flex-column justify-content-center" style="height:100%;width:500px;">
+        
+         <form  method="post" id="submitForm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="soundFile">Select sound file to upload</label>
+                <input accept="audio/wav" type="file" class="form-control" id="inputFile" name="inputFile">
+                
+                
+            </div>
+            
+            <button type="submit" id="uploadButton" class="btn btn-primary" >Upload Sound</button>
+        </form>
+        <div class="p-2 " id="tablediv"></div>
+        
+        </div>
+        </div>
+    </body>
+</html>
