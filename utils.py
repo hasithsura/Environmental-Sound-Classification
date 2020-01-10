@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from audioutils import get_melspectrogram_db, normalize_spectrogram
+from audioutils import get_melspectrogram_db, spec_to_image
 from torch.utils.data import Dataset
 from tqdm import tqdm
 class ESC50Data(Dataset):
@@ -17,7 +17,7 @@ class ESC50Data(Dataset):
     for ind in tqdm(range(len(df))):
       row = df.iloc[ind]
       file_path = os.path.join(base,row[in_col])
-      self.data.append(normalize_spectrogram(get_melspectrogram_db(file_path))[np.newaxis,...])
+      self.data.append(spec_to_image(get_melspectrogram_db(file_path))[np.newaxis,...])
       self.labels.append(self.c2i[row['category']])
   def __len__(self):
     return len(self.data)

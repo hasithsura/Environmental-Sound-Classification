@@ -1,6 +1,6 @@
 import librosa
 import numpy as np
-def normalize_spectrogram(spec, eps=1e-6):
+def spec_to_image(spec, eps=1e-6):
   mean = spec.mean()
   std = spec.std()
   spec_norm = (spec - mean) / (std + eps)

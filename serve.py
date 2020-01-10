@@ -10,7 +10,7 @@ import uvicorn
 import aiohttp
 import asyncio
 import pickle
-from audioutils import get_melspectrogram_db, normalize_spectrogram
+from audioutils import get_melspectrogram_db, spec_to_image
 
 app=Starlette()
 if torch.cuda.is_available():
@@ -22,7 +22,7 @@ with open('saved/indtocat.pkl','rb') as f:
 resnet_model = torch.load('saved/esc50resnet.pth', map_location=device)
 def predict_sound_from_bytes(resnet_model,indtocat, filename):
     spec=get_melspectrogram_db(filename)
-    spec_norm = normalize_spectrogram(spec)
+    spec_norm = spec_to_image(spec)
     spec_t=torch.tensor(spec_norm).to(device, dtype=torch.float32)
     pr=resnet_model.forward(spec_t.reshape(1,1,*spec_t.shape))[0].cpu().detach().numpy()
     pred = {name:pr[ind] for ind,name in indtocat.items()}
